@@ -1,6 +1,12 @@
 #include <iostream>
 #include <SDL2/SDL.h>
+
+#include "cleanup.h"
 #include "res_path.h"
+
+void logSDLError(std::ostream &os, const std::string &msg){
+    os << msg << " error: " << SDL_GetError() << std::endl;
+}
 
 int main(int, char**){
     if (SDL_Init(SDL_INIT_VIDEO) != 0){
@@ -21,8 +27,8 @@ int main(int, char**){
     //synchronized with the monitor's refresh rate
     SDL_Renderer *ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (ren == nullptr){
-        SDL_DestroyWindow(win);
-        std::cout << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
+        logSDLError(std::cout, "CreateRenderer");
+        cleanup(win);
         SDL_Quit();
         return 1;
     }
@@ -32,9 +38,8 @@ int main(int, char**){
     std::string imagePath = getResourcePath() + "hello.bmp";
     SDL_Surface *bmp = SDL_LoadBMP(imagePath.c_str());
     if (bmp == nullptr){
-        SDL_DestroyRenderer(ren);
-        SDL_DestroyWindow(win);
-        std::cout << "SDL_LoadBMP Error: " << SDL_GetError() << std::endl;
+        cleanup(ren, win);
+        logSDLError(std::cout, "SDL_LoadBMP");
         SDL_Quit();
         return 1;
     }
@@ -44,9 +49,8 @@ int main(int, char**){
     SDL_Texture *tex = SDL_CreateTextureFromSurface(ren, bmp);
     SDL_FreeSurface(bmp);
     if (tex == nullptr){
-        SDL_DestroyRenderer(ren);
-        SDL_DestroyWindow(win);
-        std::cout << "SDL_CreateTextureFromSurface Error: " << SDL_GetError() << std::endl;
+        cleanup(ren, win);
+        logSDLError(std::cout, "SDL_CreateTextureFromSurface");
         SDL_Quit();
         return 1;
     }
@@ -71,9 +75,7 @@ int main(int, char**){
         }
     }
 
-    SDL_DestroyTexture(tex);
-    SDL_DestroyRenderer(ren);
-    SDL_DestroyWindow(win);
+    cleanup(tex, ren, win);
     SDL_Quit();
 
     return 0;
