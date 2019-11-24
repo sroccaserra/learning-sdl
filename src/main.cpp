@@ -14,7 +14,7 @@ int main(int, char**){
         return 1;
     }
 
-    SDL_Window *win = SDL_CreateWindow("Hello World!", 100, 100, 640, 480, SDL_WINDOW_SHOWN);
+    SDL_Window * const win = SDL_CreateWindow("Hello World!", 100, 100, 640, 480, SDL_WINDOW_SHOWN);
     if (win == nullptr){
         std::cout << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
         return 1;
@@ -25,7 +25,7 @@ int main(int, char**){
     //Flags: SDL_RENDERER_ACCELERATED: We want to use hardware accelerated rendering
     //SDL_RENDERER_PRESENTVSYNC: We want the renderer's present function (update screen) to be
     //synchronized with the monitor's refresh rate
-    SDL_Renderer *ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    SDL_Renderer * const ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (ren == nullptr){
         logSDLError(std::cout, "CreateRenderer");
         cleanup(win);
@@ -36,7 +36,7 @@ int main(int, char**){
     //SDL 2.0 now uses textures to draw things but SDL_LoadBMP returns a surface
     //this lets us choose when to upload or remove textures from the GPU
     std::string imagePath = getResourcePath() + "hello.bmp";
-    SDL_Surface *bmp = SDL_LoadBMP(imagePath.c_str());
+    SDL_Surface * const bmp = SDL_LoadBMP(imagePath.c_str());
     if (bmp == nullptr){
         cleanup(ren, win);
         logSDLError(std::cout, "SDL_LoadBMP");
@@ -46,7 +46,7 @@ int main(int, char**){
 
     //To use a hardware accelerated texture for rendering we can create one from
     //the surface we loaded
-    SDL_Texture *tex = SDL_CreateTextureFromSurface(ren, bmp);
+    SDL_Texture * const tex = SDL_CreateTextureFromSurface(ren, bmp);
     SDL_FreeSurface(bmp);
     if (tex == nullptr){
         cleanup(ren, win);
