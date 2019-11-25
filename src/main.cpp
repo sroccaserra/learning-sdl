@@ -14,8 +14,8 @@ int main(int, char**){
         return 1;
     }
 
-    SDL_Window * const win = SDL_CreateWindow("Hello World!", 100, 100, 640, 480, SDL_WINDOW_SHOWN);
-    if (win == nullptr){
+    SDL_Window * const window = SDL_CreateWindow("Hello World!", 100, 100, 640, 480, SDL_WINDOW_SHOWN);
+    if (window == nullptr){
         std::cout << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
         return 1;
     }
@@ -25,10 +25,10 @@ int main(int, char**){
     //Flags: SDL_RENDERER_ACCELERATED: We want to use hardware accelerated rendering
     //SDL_RENDERER_PRESENTVSYNC: We want the renderer's present function (update screen) to be
     //synchronized with the monitor's refresh rate
-    SDL_Renderer * const ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (ren == nullptr){
+    SDL_Renderer * const renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    if (renderer == nullptr){
         logSDLError(std::cout, "CreateRenderer");
-        cleanup(win);
+        cleanup(window);
         SDL_Quit();
         return 1;
     }
@@ -38,7 +38,7 @@ int main(int, char**){
     std::string imagePath = getResourcePath() + "hello.bmp";
     SDL_Surface * const bmp = SDL_LoadBMP(imagePath.c_str());
     if (bmp == nullptr){
-        cleanup(ren, win);
+        cleanup(renderer, window);
         logSDLError(std::cout, "SDL_LoadBMP");
         SDL_Quit();
         return 1;
@@ -46,36 +46,36 @@ int main(int, char**){
 
     //To use a hardware accelerated texture for rendering we can create one from
     //the surface we loaded
-    SDL_Texture * const tex = SDL_CreateTextureFromSurface(ren, bmp);
+    SDL_Texture * const texture = SDL_CreateTextureFromSurface(renderer, bmp);
     SDL_FreeSurface(bmp);
-    if (tex == nullptr){
-        cleanup(ren, win);
+    if (texture == nullptr){
+        cleanup(renderer, window);
         logSDLError(std::cout, "SDL_CreateTextureFromSurface");
         SDL_Quit();
         return 1;
     }
 
-    SDL_RenderClear(ren);
-    SDL_RenderCopy(ren, tex, NULL, NULL);
-    SDL_RenderPresent(ren);
+    SDL_RenderClear(renderer);
+    SDL_RenderCopy(renderer, texture, NULL, NULL);
+    SDL_RenderPresent(renderer);
 
-    SDL_Event e;
+    SDL_Event event;
     bool quit = false;
     while (!quit){
-        while (SDL_PollEvent(&e)){
-            if (e.type == SDL_QUIT){
+        while (SDL_PollEvent(&event)){
+            if (event.type == SDL_QUIT){
                 quit = true;
             }
-            if (e.type == SDL_KEYDOWN){
+            if (event.type == SDL_KEYDOWN){
                 quit = true;
             }
-            if (e.type == SDL_MOUSEBUTTONDOWN){
+            if (event.type == SDL_MOUSEBUTTONDOWN){
                 quit = true;
             }
         }
     }
 
-    cleanup(tex, ren, win);
+    cleanup(texture, renderer, window);
     SDL_Quit();
 
     return 0;
