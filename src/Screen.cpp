@@ -17,6 +17,10 @@ Screen::~Screen() {
     pixels = nullptr;
 }
 
+int Screen::rowSizeInBytes() {
+    return width*bytesPerPixel;
+}
+
 void Screen::initPixels() {
     for (int x = 0; x<width; ++x) {
         for (int y = 0; y<height; ++y) {
@@ -32,8 +36,8 @@ void Screen::initPixels() {
     }
 }
 
-int Screen::rowSizeInBytes() {
-    return width*bytesPerPixel;
+void Screen::update() {
+    initPixels();
 }
 
 int Screen::getRandomByte() {

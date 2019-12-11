@@ -16,9 +16,10 @@ class Screen {
 
         ~Screen();
 
-        void initPixels();
-
         int rowSizeInBytes();
+
+        void initPixels();
+        void update();
 
     private:
         std::uniform_int_distribution<int> uniform_dist;

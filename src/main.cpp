@@ -11,6 +11,20 @@ void logSDLError(std::ostream &os, const std::string &msg){
     os << msg << " error: " << SDL_GetError() << std::endl;
 }
 
+int draw(SDL_Renderer * renderer, SDL_Surface * surface) {
+    SDL_Texture * const texture = SDL_CreateTextureFromSurface(renderer, surface);
+    if (texture == nullptr){
+        return 1;
+    }
+
+    SDL_RenderClear(renderer);
+    SDL_RenderCopy(renderer, texture, NULL, NULL);
+    cleanup(texture);
+    SDL_RenderPresent(renderer);
+
+    return 0;
+}
+
 int main(int, char**){
     if (SDL_Init(SDL_INIT_VIDEO) != 0){
         std::cout << "SDL_Init Error: " << SDL_GetError() << std::endl;
@@ -48,20 +62,13 @@ int main(int, char**){
         return 1;
     }
 
-    //To use a hardware accelerated texture for rendering we can create one from
-    //the surface we loaded
-    SDL_Texture * const texture = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_FreeSurface(surface);
-    if (texture == nullptr){
+    int drawResult = draw(renderer, surface);
+    if (drawResult != 0) {
         cleanup(renderer, window);
         logSDLError(std::cout, "SDL_CreateTextureFromSurface");
         SDL_Quit();
         return 1;
     }
-
-    SDL_RenderClear(renderer);
-    SDL_RenderCopy(renderer, texture, NULL, NULL);
-    SDL_RenderPresent(renderer);
 
     SDL_Event event;
     bool quit = false;
@@ -71,9 +78,12 @@ int main(int, char**){
                 quit = true;
             }
         }
+
+        screen.update();
+        draw(renderer, surface);
     }
 
-    cleanup(texture, renderer, window);
+    cleanup(surface, renderer, window);
     SDL_Quit();
 
     return 0;
