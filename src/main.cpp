@@ -1,8 +1,22 @@
 #include <iostream>
+#include <random>
+
 #include <SDL2/SDL.h>
 
 #include "cleanup.h"
 #include "res_path.h"
+
+int width = 256;
+int height = 256;
+int depth = 24;
+int bytesPerPixel = depth/8;
+int pitch = width*bytesPerPixel;
+Uint32 pixelFormat = SDL_PIXELFORMAT_RGB24;
+
+int nbPixels = width*height;
+int dataSize = nbPixels*bytesPerPixel;
+Uint8 * pixels = new Uint8[dataSize];
+
 
 void logSDLError(std::ostream &os, const std::string &msg){
     os << msg << " error: " << SDL_GetError() << std::endl;
@@ -14,7 +28,8 @@ int main(int, char**){
         return 1;
     }
 
-    SDL_Window * const window = SDL_CreateWindow("Hello World!", 100, 100, 640, 480, SDL_WINDOW_SHOWN);
+    int pixelSize = 2;
+    SDL_Window * const window = SDL_CreateWindow("Hello World!", 100, 100, width*pixelSize, height*pixelSize, SDL_WINDOW_SHOWN);
     if (window == nullptr){
         std::cout << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
         return 1;
@@ -33,21 +48,34 @@ int main(int, char**){
         return 1;
     }
 
-    //SDL 2.0 now uses textures to draw things but SDL_LoadBMP returns a surface
-    //this lets us choose when to upload or remove textures from the GPU
-    std::string imagePath = getResourcePath() + "hello.bmp";
-    SDL_Surface * const bmp = SDL_LoadBMP(imagePath.c_str());
-    if (bmp == nullptr){
+    std::random_device r;
+    std::default_random_engine e1(r());
+    std::uniform_int_distribution<int> uniform_dist(0, 255);
+    for (int x = 0; x<width; ++x) {
+        for (int y = 0; y<height; ++y) {
+            int r = x % 256;
+            int g = y % 256;
+            int b = uniform_dist(e1);
+
+            int offset = (x+y*width)*bytesPerPixel;
+            pixels[offset] = r;
+            pixels[offset+1] = g;
+            pixels[offset+2] = b;
+        }
+    }
+
+    SDL_Surface * const surface = SDL_CreateRGBSurfaceWithFormatFrom(pixels, width, height, depth, pitch, pixelFormat);
+    if (surface == nullptr){
         cleanup(renderer, window);
-        logSDLError(std::cout, "SDL_LoadBMP");
+        logSDLError(std::cout, "Surface creation failed.");
         SDL_Quit();
         return 1;
     }
 
     //To use a hardware accelerated texture for rendering we can create one from
     //the surface we loaded
-    SDL_Texture * const texture = SDL_CreateTextureFromSurface(renderer, bmp);
-    SDL_FreeSurface(bmp);
+    SDL_Texture * const texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
     if (texture == nullptr){
         cleanup(renderer, window);
         logSDLError(std::cout, "SDL_CreateTextureFromSurface");
