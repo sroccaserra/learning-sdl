@@ -5,18 +5,7 @@
 
 #include "cleanup.h"
 #include "res_path.h"
-
-int width = 256;
-int height = 256;
-int depth = 24;
-int bytesPerPixel = depth/8;
-int pitch = width*bytesPerPixel;
-Uint32 pixelFormat = SDL_PIXELFORMAT_RGB24;
-
-int nbPixels = width*height;
-int dataSize = nbPixels*bytesPerPixel;
-Uint8 * pixels = new Uint8[dataSize];
-
+#include "Screen.h"
 
 void logSDLError(std::ostream &os, const std::string &msg){
     os << msg << " error: " << SDL_GetError() << std::endl;
@@ -28,8 +17,9 @@ int main(int, char**){
         return 1;
     }
 
+    Screen screen(256, 256);
     int pixelSize = 2;
-    SDL_Window * const window = SDL_CreateWindow("Hello World!", 100, 100, width*pixelSize, height*pixelSize, SDL_WINDOW_SHOWN);
+    SDL_Window * const window = SDL_CreateWindow("Hello World!", 100, 100, screen.width*pixelSize, screen.height*pixelSize, SDL_WINDOW_SHOWN);
     if (window == nullptr){
         std::cout << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
         return 1;
@@ -48,23 +38,9 @@ int main(int, char**){
         return 1;
     }
 
-    std::random_device r;
-    std::default_random_engine e1(r());
-    std::uniform_int_distribution<int> uniform_dist(0, 255);
-    for (int x = 0; x<width; ++x) {
-        for (int y = 0; y<height; ++y) {
-            int r = x % 256;
-            int g = y % 256;
-            int b = uniform_dist(e1);
-
-            int offset = (x+y*width)*bytesPerPixel;
-            pixels[offset] = r;
-            pixels[offset+1] = g;
-            pixels[offset+2] = b;
-        }
-    }
-
-    SDL_Surface * const surface = SDL_CreateRGBSurfaceWithFormatFrom(pixels, width, height, depth, pitch, pixelFormat);
+    int pitch = screen.rowSizeInBytes();
+    Uint32 pixelFormat = SDL_PIXELFORMAT_RGB24;
+    SDL_Surface * const surface = SDL_CreateRGBSurfaceWithFormatFrom(screen.pixels, screen.width, screen.height, screen.depth, pitch, pixelFormat);
     if (surface == nullptr){
         cleanup(renderer, window);
         logSDLError(std::cout, "Surface creation failed.");

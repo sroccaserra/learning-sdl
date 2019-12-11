@@ -8,7 +8,7 @@ all: $(EXE)
 $(EXE): main.o
 	$(CXX) $(LDFLAGS) $< -o $@
 
-main.o: src/main.cpp
+main.o: src/main.cpp src/Screen.h
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 run: $(EXE)
