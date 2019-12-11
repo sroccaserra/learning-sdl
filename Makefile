@@ -1,18 +1,21 @@
 CXX = clang++
-CXXFLAGS = -Wall -c -std=c++17
+CXXFLAGS = -Wall -std=c++17 -Iinclude
 LDFLAGS = -lsdl2
-EXE = learning-sdl
 
-all: $(EXE)
+CPP_FILES = $(wildcard src/*.cpp)
+HEADERS_FILES = $(wildcard src/*.h)
+OBJ_FILES = $(CPP_FILES:.cpp=.o)
 
-$(EXE): main.o
-	$(CXX) $(LDFLAGS) $< -o $@
+EXEC_NAME = learning-sdl
 
-main.o: src/main.cpp src/Screen.h
-	$(CXX) $(CXXFLAGS) $< -o $@
+all: $(EXEC_NAME)
 
-run: $(EXE)
-	./$(EXE)
+$(EXEC_NAME): $(OBJ_FILES)
+	$(CXX) $(LDFLAGS) $(OBJ_FILES) -o $@
+
+run: $(EXEC_NAME)
+	./$(EXEC_NAME)
 
 clean:
-	rm -f *.o && rm -f $(EXE)
+	rm -f $(OBJ_FILES)
+	rm -f $(EXEC_NAME)
