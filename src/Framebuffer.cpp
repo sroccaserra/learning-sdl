@@ -1,6 +1,6 @@
-#include "Screen.h"
+#include "Framebuffer.h"
 
-Screen::Screen(int width, int height) : width(width), height(height){
+Framebuffer::Framebuffer(int width, int height) : width(width), height(height){
     int nbPixels = width*height;
     int dataSize = nbPixels*bytesPerPixel;
     pixels = new uint8_t[dataSize];
@@ -12,16 +12,16 @@ Screen::Screen(int width, int height) : width(width), height(height){
     initPixels();
 }
 
-Screen::~Screen() {
+Framebuffer::~Framebuffer() {
     delete [] pixels;
     pixels = nullptr;
 }
 
-int Screen::rowSizeInBytes() {
+int Framebuffer::rowSizeInBytes() {
     return width*bytesPerPixel;
 }
 
-void Screen::initPixels() {
+void Framebuffer::initPixels() {
     for (int x = 0; x<width; ++x) {
         for (int y = 0; y<height; ++y) {
             int r = x%256;
@@ -36,10 +36,10 @@ void Screen::initPixels() {
     }
 }
 
-void Screen::update() {
+void Framebuffer::update() {
     initPixels();
 }
 
-int Screen::getRandomByte() {
+int Framebuffer::getRandomByte() {
     return uniform_dist(engine);
 }

@@ -5,7 +5,7 @@
 
 #include "cleanup.h"
 #include "res_path.h"
-#include "Screen.h"
+#include "Framebuffer.h"
 
 void logSDLError(std::ostream &os, const std::string &msg){
     os << msg << " error: " << SDL_GetError() << std::endl;
@@ -31,9 +31,9 @@ int main(int, char**){
         return 1;
     }
 
-    Screen screen(256, 256);
+    Framebuffer framebuffer(256, 256);
     int pixelSize = 2;
-    SDL_Window * const window = SDL_CreateWindow("Hello World!", 100, 100, screen.width*pixelSize, screen.height*pixelSize, SDL_WINDOW_SHOWN);
+    SDL_Window * const window = SDL_CreateWindow("Hello World!", 100, 100, framebuffer.width*pixelSize, framebuffer.height*pixelSize, SDL_WINDOW_SHOWN);
     if (window == nullptr){
         std::cout << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
         return 1;
@@ -52,9 +52,10 @@ int main(int, char**){
         return 1;
     }
 
-    int pitch = screen.rowSizeInBytes();
+    int pitch = framebuffer.rowSizeInBytes();
     Uint32 pixelFormat = SDL_PIXELFORMAT_RGB24;
-    SDL_Surface * const surface = SDL_CreateRGBSurfaceWithFormatFrom(screen.pixels, screen.width, screen.height, screen.depth, pitch, pixelFormat);
+    SDL_Surface * const surface =
+        SDL_CreateRGBSurfaceWithFormatFrom(framebuffer.pixels, framebuffer.width, framebuffer.height, framebuffer.depth, pitch, pixelFormat);
     if (surface == nullptr){
         cleanup(renderer, window);
         logSDLError(std::cout, "Surface creation failed.");
@@ -79,7 +80,7 @@ int main(int, char**){
             }
         }
 
-        screen.update();
+        framebuffer.update();
         draw(renderer, surface);
     }
 

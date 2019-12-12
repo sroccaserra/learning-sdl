@@ -1,10 +1,10 @@
-#ifndef SCREEN_H
-#define SCREEN_H
+#ifndef FRAMEBUFFER_H
+#define FRAMEBUFFER_H
 
 #include <cstddef>
 #include <random>
 
-class Screen {
+class Framebuffer {
     public:
         int width;
         int height;
@@ -12,9 +12,9 @@ class Screen {
         int bytesPerPixel = 3;
         uint8_t* pixels;
 
-        Screen(int width, int height);
+        Framebuffer(int width, int height);
 
-        ~Screen();
+        ~Framebuffer();
 
         int rowSizeInBytes();
 
@@ -28,4 +28,4 @@ class Screen {
         int getRandomByte();
 };
 
-#endif // SCREEN_H
+#endif // FRAMEBUFFER_H
