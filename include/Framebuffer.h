@@ -12,11 +12,11 @@ class Framebuffer {
         int bytesPerPixel = 3;
         uint8_t* pixels;
 
-        Framebuffer(int width, int height);
+        Framebuffer(const int width, const int height);
 
         ~Framebuffer();
 
-        int rowSizeInBytes();
+        const int rowSizeInBytes();
 
         void initPixels();
         void update();

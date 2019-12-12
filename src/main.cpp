@@ -33,17 +33,19 @@ int main(int, char**){
 
     Framebuffer framebuffer(256, 256);
     int pixelSize = 2;
-    SDL_Window * const window = SDL_CreateWindow("Hello World!", 100, 100, framebuffer.width*pixelSize, framebuffer.height*pixelSize, SDL_WINDOW_SHOWN);
+    SDL_Window * const window = SDL_CreateWindow(
+        "Hello World!",
+        100,
+        100,
+        framebuffer.width*pixelSize,
+        framebuffer.height*pixelSize,
+        SDL_WINDOW_SHOWN
+    );
     if (window == nullptr){
         std::cout << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
         return 1;
     }
 
-    //Create a renderer that will draw to the window, -1 specifies that we want to load whichever
-    //video driver supports the flags we're passing
-    //Flags: SDL_RENDERER_ACCELERATED: We want to use hardware accelerated rendering
-    //SDL_RENDERER_PRESENTVSYNC: We want the renderer's present function (update screen) to be
-    //synchronized with the monitor's refresh rate
     SDL_Renderer * const renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (renderer == nullptr){
         logSDLError(std::cout, "CreateRenderer");
@@ -54,8 +56,14 @@ int main(int, char**){
 
     int pitch = framebuffer.rowSizeInBytes();
     Uint32 pixelFormat = SDL_PIXELFORMAT_RGB24;
-    SDL_Surface * const surface =
-        SDL_CreateRGBSurfaceWithFormatFrom(framebuffer.pixels, framebuffer.width, framebuffer.height, framebuffer.depth, pitch, pixelFormat);
+    SDL_Surface *const surface = SDL_CreateRGBSurfaceWithFormatFrom(
+        framebuffer.pixels,
+        framebuffer.width,
+        framebuffer.height,
+        framebuffer.depth,
+        pitch,
+        pixelFormat
+    );
     if (surface == nullptr){
         cleanup(renderer, window);
         logSDLError(std::cout, "Surface creation failed.");

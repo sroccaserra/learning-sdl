@@ -1,6 +1,6 @@
 #include "Framebuffer.h"
 
-Framebuffer::Framebuffer(int width, int height) : width(width), height(height){
+Framebuffer::Framebuffer(const int width, const int height) : width(width), height(height) {
     int nbPixels = width*height;
     int dataSize = nbPixels*bytesPerPixel;
     pixels = new uint8_t[dataSize];
@@ -17,7 +17,7 @@ Framebuffer::~Framebuffer() {
     pixels = nullptr;
 }
 
-int Framebuffer::rowSizeInBytes() {
+const int Framebuffer::rowSizeInBytes() {
     return width*bytesPerPixel;
 }
 
