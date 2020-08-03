@@ -17,7 +17,7 @@ Framebuffer::~Framebuffer() {
     pixels = nullptr;
 }
 
-const int Framebuffer::rowSizeInBytes() {
+int Framebuffer::rowSizeInBytes() {
     return width*bytesPerPixel;
 }
 

@@ -16,7 +16,7 @@ class Framebuffer {
 
         ~Framebuffer();
 
-        const int rowSizeInBytes();
+        int rowSizeInBytes();
 
         void initPixels();
         void update();

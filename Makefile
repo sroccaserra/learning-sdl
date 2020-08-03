@@ -1,5 +1,5 @@
 CXX = clang++
-CXXFLAGS = -Wall -std=c++17 -Iinclude
+CXXFLAGS = -Wall -Wextra -Wpedantic -std=c++17 -Iinclude
 LDFLAGS = -lsdl2
 
 CPP_FILES = $(wildcard src/*.cpp)
